@@ -10,11 +10,17 @@ module Distribusion
     end
 
     def get(path, params)
-      @conn.get(path, params.merge(passphrase: ENV['PASSPHRASE'].to_s))
+      @conn.get(path, params.merge(passphrase: passphrase))
     end
 
     def post(path, data)
-      @conn.get(path, data.merge(passphrase: ENV['PASSPHRASE'].to_s))
+      @conn.post(path, data.merge(passphrase: passphrase))
+    end
+
+    private
+
+    def passphrase
+      @passphrase ||= ENV['PASSPHRASE'].to_s.freeze
     end
   end
 end

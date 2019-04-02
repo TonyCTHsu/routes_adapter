@@ -9,8 +9,8 @@ module Loopholes
       {
         start_node: @node_pair.start_node,
         end_node: @node_pair.end_node,
-        start_time: @route.start_time.iso8601,
-        end_time: @route.end_time.iso8601
+        start_time: @route.start_time.strftime('%Y-%m-%dT%H:%M:%S'),
+        end_time: @route.end_time.strftime('%Y-%m-%dT%H:%M:%S')
       }
     end
   end

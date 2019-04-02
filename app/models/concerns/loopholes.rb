@@ -37,7 +37,6 @@ module Loopholes
   def self.export
     Route.includes(:node_pair).find_each do |route|
       export_data = RouteData.new(route: route)
-
       Distribusion.post_loopholes(export_data.to_h)
     end
   end
