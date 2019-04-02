@@ -1,8 +1,8 @@
 class Loopholes::Route < ApplicationRecord
   belongs_to :node_pair, class_name: 'Loopholes::NodePair', foreign_key: :loopholes_node_pair_id
 
-  def self.process(input_string, node_pairs_index_by_id)
-    routes_data = JSON.parse(input_string, symbolize_names: true)[:routes]
+  def self.process(string, node_pairs_index_by_id)
+    routes_data = JSON.parse(string, symbolize_names: true)[:routes]
 
     routes_data.map do |data|
       new(

@@ -1,8 +1,8 @@
 class Sentinels::Route < ApplicationRecord
-  def self.process(input_string)
-    string = input_string.tr('\"', '').gsub(', ', ',')
+  def self.process(string)
+    formatted_string = InputStringHelper.format(string)
 
-    CSV.parse(string, headers: true).map do |row|
+    CSV.parse(formatted_string, headers: true).map do |row|
       new(
         route_id: row['route_id'],
         node: row['node'],

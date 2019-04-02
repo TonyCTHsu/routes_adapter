@@ -15,7 +15,9 @@ module Sniffers
 
       Zip::File.open(f.path, Zip::File::CREATE) do |zip|
         routes_entry = zip.find_entry('sniffers/routes.csv')
-        routes = Route.process(routes_entry.get_input_stream.read)
+        routes = Route.process(
+          routes_entry.get_input_stream.read.encode('ascii-8bit').force_encoding('utf-8')
+        )
         Route.import(routes, on_duplicate_key_update: :all)
 
         node_times_entry = zip.find_entry('sniffers/node_times.csv')
