@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_02_052357) do
+ActiveRecord::Schema.define(version: 2019_04_02_145426) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2019_04_02_052357) do
     t.string "node"
     t.integer "index"
     t.datetime "time"
+    t.index ["route_id", "index"], name: "index_sentinels_routes_on_route_id_and_index", unique: true
   end
 
   create_table "sniffers_node_times", force: :cascade do |t|
