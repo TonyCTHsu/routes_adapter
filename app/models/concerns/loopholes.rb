@@ -8,7 +8,6 @@ module Loopholes
 
   def self.import
     response = Distribusion.get_loopholes
-
     Tempfile.open(['loopholes', '.zip'], encoding: 'ascii-8bit') do |f|
       f.write(response.body)
       f.rewind
