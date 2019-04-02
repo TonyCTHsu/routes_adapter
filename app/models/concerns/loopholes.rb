@@ -7,16 +7,7 @@ module Loopholes
   end
 
   def self.import
-    url = 'https://challenge.distribusion.com/the_one'
-    passphrase = ENV['PASSPHRASE'].to_s
-
-    conn = Faraday.new(url: url) do |faraday|
-      faraday.request  :multipart
-      faraday.request  :url_encoded             # form-encode POST params
-      faraday.adapter  Faraday.default_adapter  # make requests with Net::HTTP
-    end
-
-    response = conn.get('routes', passphrase: passphrase, source: 'loopholes')
+    response = Distribusion.get_loopholes
 
     Tempfile.open(['loopholes', '.zip'], encoding: 'ascii-8bit') do |f|
       f.write(response.body)
@@ -24,20 +15,14 @@ module Loopholes
 
       Zip::File.open(f.path, Zip::File::CREATE) do |zip|
         node_pairs_entry = zip.find_entry('loopholes/node_pairs.json')
-        node_pairs_data = JSON.parse(node_pairs_entry.get_input_stream.read, symbolize_names: true)[:node_pairs]
-        node_pairs = node_pairs_data.map { |data| NodePair.new(data) }.index_by(&:id)
-        NodePair.import(node_pairs.values, on_duplicate_key_update: [:start_node, :end_node])
+        node_pairs = NodePair.process(node_pairs_entry.get_input_stream.read)
+        NodePair.import(
+          node_pairs,
+          on_duplicate_key_update: [:start_node, :end_node]
+        )
 
         routes_entry = zip.find_entry('loopholes/routes.json')
-        routes_data = JSON.parse(routes_entry.get_input_stream.read, symbolize_names: true)[:routes]
-        routes = routes_data.map do |data|
-          Route.new(
-            route_id: data[:route_id],
-            loopholes_node_pair_id: node_pairs[data[:node_pair_id].to_i].try(:id),
-            start_time: Time.zone.parse(data[:start_time].to_s),
-            end_time: Time.zone.parse(data[:end_time].to_s)
-          )
-        end
+        routes = Route.process(routes_entry.get_input_stream.read, node_pairs.index_by(&:id))
         Route.import(
           routes,
           on_duplicate_key_update: {
@@ -46,6 +31,14 @@ module Loopholes
           }
         )
       end
+    end
+  end
+
+  def self.export
+    Route.includes(:node_pair).find_each do |route|
+      export_data = RouteData.new(route: route)
+
+      Distribusion.post_loopholes(export_data.to_h)
     end
   end
 end

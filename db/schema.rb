@@ -31,11 +31,9 @@ ActiveRecord::Schema.define(version: 2019_04_02_052357) do
 
   create_table "sentinels_routes", force: :cascade do |t|
     t.integer "route_id"
-    t.integer "node"
+    t.string "node"
     t.integer "index"
     t.datetime "time"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "sniffers_node_times", force: :cascade do |t|
@@ -52,6 +50,7 @@ ActiveRecord::Schema.define(version: 2019_04_02_052357) do
     t.bigint "sniffers_route_id", null: false
     t.bigint "sniffers_node_time_id", null: false
     t.index ["sniffers_node_time_id"], name: "index_sniffers_sequences_on_sniffers_node_time_id"
+    t.index ["sniffers_route_id", "sniffers_node_time_id"], name: "sniffers_sequences_uniq", unique: true
     t.index ["sniffers_route_id"], name: "index_sniffers_sequences_on_sniffers_route_id"
   end
 

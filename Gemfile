@@ -37,6 +37,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 gem 'figaro'
 gem 'faraday'
+gem 'faraday_middleware'
 gem 'rubyzip'
 gem 'activerecord-import'
 
