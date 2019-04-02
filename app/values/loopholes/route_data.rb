@@ -1,17 +1,26 @@
 module Loopholes
-  class RouteData
+  class RouteData < BaseRouteData
     def initialize(route:)
       @route = route
       @node_pair = route.node_pair
     end
 
-    def to_h
-      {
-        start_node: @node_pair.start_node,
-        end_node: @node_pair.end_node,
-        start_time: @route.start_time.strftime('%Y-%m-%dT%H:%M:%S'),
-        end_time: @route.end_time.strftime('%Y-%m-%dT%H:%M:%S')
-      }
+    private
+
+    def start_node
+      @node_pair.start_node
+    end
+
+    def end_node
+      @node_pair.end_node
+    end
+
+    def start_time
+      @route.start_time
+    end
+
+    def end_time
+      @route.end_time
     end
   end
 end

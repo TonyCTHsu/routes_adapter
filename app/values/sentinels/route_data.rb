@@ -1,16 +1,25 @@
 module Sentinels
-  class RouteData
+  class RouteData < BaseRouteData
     def initialize(route:)
       @route = route
     end
 
-    def to_h
-      {
-        start_node: @route.node,
-        end_node: @route.other_node,
-        start_time: @route.time.strftime('%Y-%m-%dT%H:%M:%S'),
-        end_time: @route.other_time.strftime('%Y-%m-%dT%H:%M:%S')
-      }
+    private
+
+    def start_node
+      @route.node
+    end
+
+    def end_node
+      @route.other_node
+    end
+
+    def start_time
+      @route.time
+    end
+
+    def end_time
+      @route.other_time
     end
   end
 end
