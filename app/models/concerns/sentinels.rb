@@ -26,7 +26,7 @@ module Sentinels
         entry = zip.find_entry('sentinels/routes.csv')
         table = CSV.parse(entry.get_input_stream.read.tr('\"', '').gsub(', ', ','), headers: true)
 
-        table.map do |row|
+        records = table.map do |row|
           Route.new(
             route_id: row['route_id'],
             node: row['node'],
@@ -34,6 +34,8 @@ module Sentinels
             time: Time.zone.parse(row['time'].to_s)
           )
         end
+
+        Route.import(records)
       end
     end
   end

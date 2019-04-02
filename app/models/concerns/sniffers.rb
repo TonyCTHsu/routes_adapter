@@ -24,17 +24,18 @@ module Sniffers
 
       Zip::File.open(f.path, Zip::File::CREATE) do |zip|
         routes_entry = zip.find_entry('sniffers/routes.csv')
-        string = routes_entry.get_input_stream.read.encode('ascii-8bit').force_encoding('utf-8').tr('\"', '').gsub(', ', ',')
-        CSV.parse(string, headers: true).map do |row|
+        routes_string = routes_entry.get_input_stream.read.encode('ascii-8bit').force_encoding('utf-8').tr('\"', '').gsub(', ', ',')
+        routes = CSV.parse(routes_string, headers: true).map do |row|
           Route.new(
             id: row['route_id'],
             time: Time.zone.parse(row['time'].to_s + row['time_zone'].to_s)
           )
         end
+        Route.import(routes, on_duplicate_key_update: true)
 
         node_times_entry = zip.find_entry('sniffers/node_times.csv')
-        string = node_times_entry.get_input_stream.read.tr('\"', '').gsub(', ', ',')
-        CSV.parse(string, headers: true).map do |row|
+        node_times_string = node_times_entry.get_input_stream.read.tr('\"', '').gsub(', ', ',')
+        node_times = CSV.parse(node_times_string, headers: true).map do |row|
           NodeTime.new(
             id: row['node_time_id'],
             start_node: row['start_node'],
@@ -42,15 +43,17 @@ module Sniffers
             duration: row['duration_in_milliseconds']
           )
         end
+        NodeTime.import(node_times, on_duplicate_key_update: true)
 
         sequences_entry = zip.find_entry('sniffers/sequences.csv')
-        string = sequences_entry.get_input_stream.read.tr('\"', '').gsub(', ', ',')
-        CSV.parse(string, headers: true).map do |row|
+        sequences_string = sequences_entry.get_input_stream.read.tr('\"', '').gsub(', ', ',')
+        sequences = CSV.parse(sequences_string, headers: true).map do |row|
           Sequence.new(
             sniffers_route_id: row['route_id'],
             sniffers_node_time_id: row['node_time_id']
           )
         end
+        Sequence.import(sequences, on_duplicate_key_ignore: true)
       end
     end
   end
